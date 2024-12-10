@@ -11,31 +11,46 @@ export const data = [{
             link: "/contact"
         }, {
             name: "Inputs",
-            link: "/profile"
+            link: "#"
         }
     ]
-},{
+}, {
     name: "Holidays",
-    childrens: [
-        {
-            name: "2024",
-            link: "#"
-        },
-        {
-            name: "2025",
-            link: "#"
-        }
-    ]
+    link: "/holidays"
 }, {
     name: "Leaves",
     childrens: [
         {
             name: "Dashboard",
-            link: "#"
+            link: "/dashboard"
         },
         {
             name: "History",
-            link: "#"
+            link: "/history"
         }
     ]
+},{
+    name: "User Management",
+    link: "/usermanagement"
+},
+{
+    name: "Sign In",
+    link:"/login"
 }];
+
+export const tabData = {
+    tabs: [
+        {
+            id: "address",
+            name: "Address",
+            content: "addressDetails",
+            modalData: "formDetails"
+        },
+        {
+            id: "others",
+            name: "Others",
+            content: "otherdetails",
+            modalData: "otherDetails"
+        },
+    ]
+};

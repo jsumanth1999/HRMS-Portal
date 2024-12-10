@@ -70,8 +70,56 @@ export const officialDetails = {
     ]
 
 }
- 
-	  
+
+
+export const addressDetails = {
+    title: "Address Information",
+    columns: ["Address Type", "Address Line1", "Address Line2", "City", "State", "Postal Code", "Country", "Action"],
+    rows: [
+        
+        ["Home", "123 Maple St","Apt 201", "Boston", "MA", "02118", "USA", ],
+        ["Work", "789 Business Pkwy", "Floor 3","San Francisco","CA", "94105", "USA"],
+        [ "Billing", "101 First Ave", "Suite 500","Chicago", "IL", "60601", "USA"],
+        [ "Shipping", "456 Oak Rd", "Unit 2B", "Austin", "TX", "73301","USA"],
+        [ "Vacation", "99 Sunset Blvd", "Beachfront Villa", "Los Angeles", "CA", "90210", "USA"]
+    ]
+};
+
+
+export const otherdetails = {
+    title: "Other Contact Information",
+    columns: ["Contact Type","Channel Type","value","Primary channel","Action"],
+    rows:[
+        ["Email","Email","xyz@gmail.com","Yes"],
+        ["Email","Email","xabc@gmail.com","Yes"]
+    ]
+}
+
+export const leaveDetails = {
+    title: "Applied Leave Details",
+    columns: ["ID","From Date","To date","Applied","Approved","Rejected","Cancelled","Reason for Leave Applied","Reason for Leave Cancelled","Approved Remarks","Approved On","Approved By","Action"],
+    rows:[
+        [	
+            "SL","15-11-2024","15-11-2024","1.00", "1.00"," Suffering from fewer, cold, headache.","NA","Approved","NA","NA","2024-11-19","HARISH RAJAMANI"]
+        ]
+}
+
+export const formDetails = {
+    id : "Contact Form",
+}
+
+export const otherDetails = {
+    id: "Other Form",
+}
+
+export const leaveForm = {
+    id: "Leave Form"
+}
+
+export const userFrom = {
+    id: "userForm"
+}
+ 				
 	 
 	 
 	 
