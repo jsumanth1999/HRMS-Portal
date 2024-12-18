@@ -1,12 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Dropdown from './Dropdown';
 import { years } from '@/utils/holidayDetails';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteHoliday, fetchHolidayById, fetchHolidays } from '@/features/holidays/thunks';
+import Modal from './Modal';
+import { setHolidayForm } from '@/features/holidays/slice';
 
 const OtherTable = (props) => {
-    console.log(props?.data);
 
     const { columns, holidays } = props?.data;
-    console.log(props.data);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [holidayData, setHolidayData] = useState("");
+    const [formId, setFormId] = useState();
+    const dispatch = useDispatch();
+
+    const selector = useSelector((state) => state.holiday);
+    const fullYear = selector.year;
+
+
+    const handleEdit = async(id) => {
+        dispatch(setHolidayForm("updateHoliday"))
+        const res = await dispatch(fetchHolidayById({holidayId : id}));
+        setIsModalVisible(true);
+        setFormId("updateHoliday")
+        setHolidayData(res.payload.data);
+    }
+
+    const handleDelete = async(id) => {
+        console.log(id);
+        const res = await dispatch(deleteHoliday({holidayId : id}));
+        console.log(res);
+        if (res.meta.requestStatus === "fulfilled") {
+            fetchHolidays(); // Ensure reloadData is called
+          }
+    }
+
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+      };
 
     return (
         <>
@@ -17,7 +48,7 @@ const OtherTable = (props) => {
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr className='w-full bg-blue-950 dark:bg-white dark:text-gray-800 text-white text-md font-bold'>
-                            <th colSpan="8" className="px-6 py-3 justify-center">{holidays?.[2023][0]?.title}</th>
+                            <th colSpan="8" className="px-6 py-3 justify-center">{holidays?.title}</th>
                         </tr>
                         <tr>
                             {columns?.map((item, index) => (
@@ -29,10 +60,10 @@ const OtherTable = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {holidays?.['2023']?.map((item, index) => (
-                            <tr key={index} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                        {holidays?.[fullYear]?.map((item, index) => (
+                            <tr key={item._id} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                 <td className="px-6 py-4">
-                                    {item.festivalDay}
+                                    {item.title}
                                 </td>
                                 <td className="px-6 py-4">
                                     {item.date}
@@ -44,8 +75,8 @@ const OtherTable = (props) => {
                                     {item.alternateWorkingDate}
                                 </td>
                                 <td className="px-6 py-4 pl-0">
-                                    <button className='bg-blue-500 text-white px-2 py-2 m-2 font-bold'>Edit</button>
-                                    <button className='bg-red-500 text-white px-2 py-2 m-2 font-bold'>Delete</button>
+                                    <button className='bg-blue-500 text-white px-2 py-2 m-2 font-bold' onClick={() => handleEdit(`${item._id}`)}>Edit</button>
+                                    <button className='bg-red-500 text-white px-2 py-2 m-2 font-bold' onClick={() => handleDelete(`${item._id}`)}>Delete</button>
                                 </td>
                             </tr>
                         ))}
@@ -53,6 +84,7 @@ const OtherTable = (props) => {
 
                 </table>
             </div>
+            <Modal isVisible={isModalVisible} onClose={handleCloseModal} data={formId} userData={holidayData}></Modal>
         </>
 
     );

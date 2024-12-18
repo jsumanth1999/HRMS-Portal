@@ -74,7 +74,7 @@ export const officialDetails = {
 
 export const addressDetails = {
     title: "Address Information",
-    columns: ["Address Type", "Address Line1", "Address Line2", "City", "State", "Postal Code", "Country", "Action"],
+    columns: ["Address Type", "Address Line1", "Address Line2", "City", "State", "Postal Code", "Country"],
     rows: [
         
         ["Home", "123 Maple St","Apt 201", "Boston", "MA", "02118", "USA", ],
@@ -88,7 +88,7 @@ export const addressDetails = {
 
 export const otherdetails = {
     title: "Other Contact Information",
-    columns: ["Contact Type","Channel Type","value","Primary channel","Action"],
+    columns: ["Contact Type","Channel Type","value","Primary channel"],
     rows:[
         ["Email","Email","xyz@gmail.com","Yes"],
         ["Email","Email","xabc@gmail.com","Yes"]
@@ -119,7 +119,10 @@ export const leaveForm = {
 export const userFrom = {
     id: "userForm"
 }
- 				
+
+export const updateInviteForm = {
+    id: "updateInviteForm"
+}
 	 
 	 
 	 

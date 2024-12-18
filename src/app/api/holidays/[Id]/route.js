@@ -61,29 +61,32 @@ export async function GET(NextRequest, { params }) {
 }
 
 export async function PUT(NextRequest, { params }) {
-  const authorization = await NextRequest.headers.get("authorization");
+  const authorization = NextRequest.headers.get("authorization");
 
   if (!authorization) {
     return NextResponse.json({
       message: "Token is Missing",
-    });
+    }, { status: 401 });
   }
 
   const token = authorization;
   let payload;
   try {
     payload = jwt.verify(token, process.env.SECRET_KEY);
-    console.log(payload);
   } catch (error) {
-    return NextResponse.json(
-      {
-        message: "Token is Invalid or Expired.",
-      },
-      { status: 401 }
-    );
+    return NextResponse.json({
+      message: "Token is Invalid or Expired.",
+    }, { status: 401 });
   }
 
-  const { Id } = params;
+  const { Id } = await params;
+
+  if (!mongoose.Types.ObjectId.isValid(Id)) {
+    return NextResponse.json({
+      message: "Invalid Holiday ID",
+    }, { status: 400 });
+  }
+
   const reqbody = await NextRequest.json();
   const {
     title,
@@ -95,49 +98,54 @@ export async function PUT(NextRequest, { params }) {
 
   if (!title || !inputDate || !holidayType || !year) {
     return NextResponse.json({
-      message: "Please enter required fields.",
-    });
-  }
-
-  const holidaysExists = mongoose.Types.ObjectId.isValid(Id);
-
-  if (!holidaysExists) {
-    return NextResponse.json(
-      {
-        message: "Holiday is not exists",
-      },
-      { status: 400 }
-    );
+      message: "Please provide all required fields.",
+    }, { status: 400 });
   }
 
   try {
     const date = new Date(inputDate);
+    if (isNaN(date.getTime())) {
+      return NextResponse.json({
+        message: "Invalid date format.",
+      }, { status: 400 });
+    }
     const formattedDate = date.toISOString();
-    console.log(formattedDate);
 
-    const data = await Holidays.findByIdAndUpdate(Id, {
-      title,
-      date: formattedDate,
-      holidayType,
-      year,
-      alternateWorkingDate,
-    });
-    return NextResponse.json(
+    // Check if holiday exists
+    const holidayExists = await Holidays.findById(Id);
+    if (!holidayExists) {
+      return NextResponse.json({
+        message: "Holiday does not exist.",
+      }, { status: 404 });
+    }
+
+    const updatedData = await Holidays.findByIdAndUpdate(
+      Id,
       {
-        message: "Holiday is updated successfully",
-        data,
+        title,
+        date: formattedDate,
+        holidayType,
+        year,
+        alternateWorkingDate: alternateWorkingDate || null,
       },
-      { status: 200 }
+      { new: true } // Return the updated document
     );
+
+    console.log("Updated Holiday:", updatedData);
+
+    return NextResponse.json({
+      message: "Holiday updated successfully",
+      data: updatedData,
+    }, { status: 200 });
+
   } catch (error) {
-    return NextResponse.json(
-      {
-        message: "Error while updating the data",
-      },
-      { status: 400 }
-    );
+    console.error("Update Error:", error);
+    return NextResponse.json({
+      message: "Error while updating the holiday.",
+    }, { status: 500 });
   }
 }
+
 
 export async function PATCH(NextRequest, { params }) {
   const authorization = await NextRequest.headers.get("authorization");
