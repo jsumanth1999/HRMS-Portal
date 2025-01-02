@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setFormId } from "@/features/user/slice";
 import { deleteUser, fetchUserById } from "@/features/user/thunks";
 import { handleListUser } from "@/utils/handleListUser";
-import { fetchContactById } from "@/features/contacts/thunks";
+import { deleteContact, fetchContactById } from "@/features/contacts/thunks";
+import { setIsAddressEdit, setOtherId } from "@/features/contacts/slice";
 
 const ContactTable = ({ data, reloadData }) => {
   const details = data;
@@ -18,6 +19,7 @@ const ContactTable = ({ data, reloadData }) => {
   // Edit handler
   const handleEdit = async (id) => {
     dispatch(setFormId("updateInviteForm"));
+    console.log(id);
     const res = await dispatch(fetchUserById({ userId: id }));
     const user = res?.payload?.data;
     setUserDetail(user);
@@ -26,14 +28,16 @@ const ContactTable = ({ data, reloadData }) => {
   };
 
   const handleContactEdit = async (id) => {
+    dispatch(setOtherId("updateOthers"));
+    dispatch(setIsAddressEdit(true));
     console.log("update code called", id);
     const res = await dispatch(fetchContactById({ contactId: id }));
-    console.log(res);
     const address = res?.payload?.data;
-    console.log(address);
-    setUserDetail(address)
+    setUserDetail(address);
     setIsModalVisible(true);
-    setModalData("updateContactForm");
+    selector.activeTab === "address"
+      ? setModalData("updateContactForm")
+      : setModalData("updateOthers");
   };
 
   // Delete handler
@@ -44,6 +48,16 @@ const ContactTable = ({ data, reloadData }) => {
       if (reloadData) reloadData(); // Reload data if the function is passed
     } catch (error) {
       console.error("Error deleting user:", error);
+    }
+  };
+
+  const handleContactDelete = async (id) => {
+    console.log("Contact Delete", id);
+    try {
+      await dispatch(deleteContact({ contactId: id }));
+      if (reloadData) reloadData();
+    } catch (error) {
+      console.error("Error while deleting contact", error);
     }
   };
 
@@ -74,41 +88,54 @@ const ContactTable = ({ data, reloadData }) => {
           </tr>
         </thead>
         <tbody>
-          {details.rows?.map((row) => (
-            <tr
-              key={row._id}
-              className="odd:bg-white text-center odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
-            >
-              {Array.isArray(row)
-                ? row.map((item, index) => (
-                    <td key={index} className="px-2 py-4">
-                      {item}
-                    </td>
-                  ))
-                : Array.isArray(row.values)
-                ? row.values.map((item, index) => (
-                    <td key={index} className="px-2 py-4">
-                      {item}
-                    </td>
-                  ))
-                : null}
+          {details.rows?.map((row, rowIndex) => {
+            // Ensure row is treated as an array of values
+            const values = Array.isArray(row) ? row : row.values;
 
-              <td className="px-2 py-4">
-                <button
-                  className="px-2 m-2 py-2 bg-blue-500 text-white font-bold"
-                  onClick={ () => handleEdit(row._id)}
-                >
-                  Edit {row._id}
-                </button>
-                <button
-                  className="px-2 m-2 py-2 bg-red-500 text-white font-bold"
-                  onClick={() => handleDelete(row._id)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
+            if (!Array.isArray(values)) {
+              console.error(
+                `Row at index ${rowIndex} is not an array or does not have a 'values' property:`,
+                row
+              );
+              return null; // Skip invalid rows
+            }
+
+            return (
+              <tr
+                key={row._id || `row-${rowIndex}`}
+                className="odd:bg-white text-center odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
+              >
+                {values.map((item, index) => (
+                  <td key={index} className="px-2 py-4">
+                    {item}
+                  </td>
+                ))}
+
+                <td className="px-2 py-4">
+                  <button
+                    className="px-2 m-2 py-2 bg-blue-500 text-white font-bold"
+                    onClick={() =>
+                      selector.contactId === "updateContactForm"
+                        ? handleContactEdit(row._id || rowIndex)
+                        : handleEdit(row._id || rowIndex)
+                    }
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="px-2 m-2 py-2 bg-red-500 text-white font-bold"
+                    onClick={() =>
+                      selector.contactId === "updateContactForm"
+                        ? handleContactDelete(row._id || rowIndex)
+                        : handleDelete(row._id || rowIndex)
+                    }
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 

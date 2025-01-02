@@ -6,12 +6,20 @@ import ContactForm from "./ContactForm";
 import LeaveForm from "./LeaveForm";
 import InviteUserForm from "./InviteUserForm";
 import HolidayForm from "./HolidayForm";
+import { useDispatch } from "react-redux";
+import { setContactId } from "@/features/contacts/slice";
 
 const Modal = ({ isVisible, onClose, data, userData, reloadData }) => {
   console.log(data);
+  const dispatch = useDispatch();
   const id = data?.id || data;
+
+  // if(id === "updateInviteForm"){
+  //   dispatch(setContactId("updateForm"));
+  // }else{
+  //   dispatch(setContactId(null))
+  // }
     console.log(id)
-  // Determine the modal title and form to render based on data.id
   let title;
   let FormComponent;
 
@@ -43,6 +51,10 @@ const Modal = ({ isVisible, onClose, data, userData, reloadData }) => {
     case "updateHoliday":
       title = "Update Holiday";
       FormComponent = HolidayForm;
+      break;
+    case "updateOthers":
+      title = "Update"
+      FormComponent = OtherForm;
       break;
     default:
       title = "Create Other Info";

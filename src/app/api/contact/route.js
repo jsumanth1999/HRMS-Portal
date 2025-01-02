@@ -30,7 +30,12 @@ export async function GET(NextRequest) {
     let response;
 
     try {
-        response = await Contacts.find({});
+        if(payload.role === "admin"){
+            response = await Contacts.find({});
+        }else{
+            response = await Contacts.find({userId: payload._id})
+        }
+        
         console.log(response);
     } catch (error) {
         return NextResponse.json({
@@ -85,7 +90,7 @@ export async function POST(NextRequest) {
     }
 
     if (type === 'address') {
-        const { addressType, addressLine1, addressLine2, city, state, postalCode, country } = address[0];
+        const { addressType, addressLine1, addressLine2, city, state, postalCode, country } = address;
 
         if (!addressLine1 || !addressType || !city || !state || !country || !postalCode) {
             return NextResponse.json({
@@ -97,7 +102,7 @@ export async function POST(NextRequest) {
         const data = await Contacts.create({
             userId: payload._id,
             type,
-            address: [{
+            address: {
                 addressType,
                 addressLine1,
                 addressLine2,
@@ -105,7 +110,7 @@ export async function POST(NextRequest) {
                 state,
                 postalCode,
                 country
-            }]
+            }
         });
 
         return NextResponse.json({
@@ -122,7 +127,7 @@ export async function POST(NextRequest) {
     }
 
     if (type === 'others') {
-        const { contactType, channelType, value, primaryChannel } = others[0];
+        const { contactType, channelType, value } = others;
 
         if (!contactType || !channelType || !value) {
             return NextResponse.json({
@@ -134,12 +139,11 @@ export async function POST(NextRequest) {
         const data = await Contacts.create({
             userId: payload._id,
             type,
-            others: [{
+            others: {
                 contactType,
                 channelType,
                 value,
-                primaryChannel: primaryChannel || false
-            }]
+            }
         });
 
         return NextResponse.json({

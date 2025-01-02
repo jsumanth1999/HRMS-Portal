@@ -97,10 +97,9 @@ export const otherdetails = {
 
 export const leaveDetails = {
     title: "Applied Leave Details",
-    columns: ["ID","From Date","To date","Applied","Approved","Rejected","Cancelled","Reason for Leave Applied","Reason for Leave Cancelled","Approved Remarks","Approved On","Approved By","Action"],
+    columns: ["ID","From Date","To date","Applied","Approved","Rejected","Cancelled","Reason for Leave Applied","Reason for Leave Cancelled","Approved Remarks","Approved On","Approved By"],
     rows:[
-        [	
-            "SL","15-11-2024","15-11-2024","1.00", "1.00"," Suffering from fewer, cold, headache.","NA","Approved","NA","NA","2024-11-19","HARISH RAJAMANI"]
+        ["SL","15-11-2024","15-11-2024","1.00", "1.00"," Suffering from fewer, cold, headache.","NA","Approved","NA","NA","2024-11-19","HARISH RAJAMANI"]
         ]
 }
 

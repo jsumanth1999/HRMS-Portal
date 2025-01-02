@@ -1,36 +1,40 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import React, { useEffect, useState, useCallback } from "react";
 import OtherTable from "@/components/OtherTable";
 import { useDispatch, useSelector } from "react-redux";
 import { setHolidayForm } from "@/features/holidays/slice";
 import Modal from "@/components/Modal";
 import { handleListHolidays } from "@/utils/handleListUser";
 import { setContactId } from "@/features/contacts/slice";
+import Sidebar from "@/components/Sidebar";
 
-const page = () => {
+const Page = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
-    const Id = useSelector((state) => state.holiday.holidayId);
-    console.log(Id);
-    dispatch(setContactId(null))
-    const fetchHolidays = async () => {
-        try {
-            setLoading(true);
-          const data = await handleListHolidays(dispatch); 
-          setUserData(data);
-        } catch (error) {
-          console.error("Failed to fetch user data:", error);
-        }finally {
-            setLoading(false);
-          }
-      };
-    
-      useEffect(() => {
-        fetchHolidays();
-      }, [dispatch]);
+  const holidayId = useSelector((state) => state.holiday.holidayId);
+
+  // Fetch Holiday Data
+  const fetchHolidays = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await handleListHolidays(dispatch);
+      setUserData(data);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [dispatch]);
+
+  // Set Contact ID to null on initial render
+  useEffect(() => {
+    dispatch(setContactId(null));
+    fetchHolidays();
+  }, [dispatch, fetchHolidays]);
 
   const showForm = async () => {
     await dispatch(setHolidayForm("holidayForm"));
@@ -56,21 +60,21 @@ const page = () => {
         <Modal
           isVisible={isModalVisible}
           onClose={handleCloseModal}
-          data={Id}
+          data={holidayId}
           reloadData={fetchHolidays}
         />
       )}
       <div>
-      {loading ? (
-        <p>Loading user details...</p>
-      ) : userData ? (
-        <OtherTable data={userData} reloadData={fetchHolidays}/>
-      ) : (
-        <p>No user details available.</p>
-      )}
+        {loading ? (
+          <p>Loading user details...</p>
+        ) : userData ? (
+          <OtherTable data={userData} reloadData={fetchHolidays} />
+        ) : (
+          <p>No user details available.</p>
+        )}
       </div>
     </div>
   );
 };
 
-export default page;
+export default Page;

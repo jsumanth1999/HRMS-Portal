@@ -3,6 +3,7 @@ import ContactTable from '@/components/ContactTable';
 import React, { useState } from 'react';
 import { leaveDetails, leaveForm } from '@/utils/personDetails';
 import Modal from '@/components/Modal';
+import Sidebar from '@/components/Sidebar';
 
 const page = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);

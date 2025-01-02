@@ -157,7 +157,7 @@ export async function PUT(NextRequest, { params }) {
       state,
       postalCode,
       country,
-    } = address[0];
+    } = address;
 
     // Validate required fields for address type
     if (
@@ -182,7 +182,7 @@ export async function PUT(NextRequest, { params }) {
         Id,
         {
           type,
-          address: [
+          address: 
             {
               addressLine1,
               addressLine2,
@@ -192,8 +192,7 @@ export async function PUT(NextRequest, { params }) {
               postalCode,
               country,
             },
-          ],
-          others: [], // Clear 'others' if updating address type
+          others: {}, // Clear 'others' if updating address type
         },
         { new: true }
       );
@@ -226,7 +225,7 @@ export async function PUT(NextRequest, { params }) {
   }
 
   if (type === "others") {
-    const { contactType, channelType, value, primaryChannel } = others[0];
+    const { contactType, channelType, value } = others;
 
     // Validate required fields for 'others' type
     if (!contactType || !channelType || !value) {
@@ -244,15 +243,13 @@ export async function PUT(NextRequest, { params }) {
         Id,
         {
           type,
-          address: [], // Clear 'address' if updating 'others' type
-          others: [
+          address: {}, // Clear 'address' if updating 'others' type
+          others:
             {
               contactType,
               channelType,
-              value,
-              primaryChannel,
+              value
             },
-          ],
         },
         { new: true }
       );
@@ -363,7 +360,7 @@ export async function PATCH(NextRequest, { params }) {
       state,
       postalCode,
       country,
-    } = address[0];
+    } = address;
 
     // Validate required fields for address type
     if (
@@ -388,7 +385,7 @@ export async function PATCH(NextRequest, { params }) {
         Id,
         {
           type,
-          address: [
+          address: 
             {
               addressLine1,
               addressLine2,
@@ -398,8 +395,7 @@ export async function PATCH(NextRequest, { params }) {
               postalCode,
               country,
             },
-          ],
-          others: [], // Clear 'others' if updating address type
+          others: {}, // Clear 'others' if updating address type
         },
         { new: true }
       );
@@ -432,8 +428,8 @@ export async function PATCH(NextRequest, { params }) {
   }
 
   if (type === "others") {
-    const { contactType, channelType, value, primaryChannel } = others[0];
-
+    const { contactType, channelType, value } = others;
+    console.log(contactType, channelType, value);
     // Validate required fields for 'others' type
     if (!contactType || !channelType || !value) {
       return NextResponse.json(
@@ -450,15 +446,13 @@ export async function PATCH(NextRequest, { params }) {
         Id,
         {
           type,
-          address: [], // Clear 'address' if updating 'others' type
-          others: [
+          address: {}, // Clear 'address' if updating 'others' type
+          others: 
             {
               contactType,
               channelType,
               value,
-              primaryChannel,
             },
-          ],
         },
         { new: true }
       );

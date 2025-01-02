@@ -9,7 +9,7 @@ const contactSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    address: [{
+    address: {
         addressType: {
             type: String,
             required: false
@@ -38,8 +38,8 @@ const contactSchema = new mongoose.Schema({
             type: String,
             required: false,
         }
-    }],
-    others: [{
+    },
+    others: {
         contactType: {
             type: String,
             required: false,
@@ -51,12 +51,8 @@ const contactSchema = new mongoose.Schema({
         value: {
             type: String,
             required: false,
-        },
-        primaryChannel: {
-            type: Boolean,
-            default: false,
         }
-    }]
+    }
 },{timestamps: true});
 
 export const Contacts = mongoose.models.Contacts || mongoose.model('Contacts', contactSchema);

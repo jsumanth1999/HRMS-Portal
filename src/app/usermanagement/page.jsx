@@ -2,6 +2,8 @@
 
 import ContactTable from "@/components/ContactTable";
 import Modal from "@/components/Modal";
+import Sidebar from "@/components/Sidebar";
+import { setContactId } from "@/features/contacts/slice";
 import { setFormId } from "@/features/user/slice";
 import { handleListUser } from "@/utils/handleListUser";
 import React, { useEffect, useState } from "react";
@@ -14,6 +16,11 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
+  useEffect(() => {
+    // Dispatch action only when the component mounts
+    dispatch(setContactId(null));
+  }, [dispatch]);
+
   const formId = useSelector((state) => state.user?.formId);
 
   const fetchData = async () => {
@@ -52,8 +59,11 @@ const Page = () => {
     setIsModalVisible(false);
   };
 
+  
+
   return (
     <div className="p-4 sm:ml-64">
+      <Sidebar />
       {/* Invite User Button */}
       <div className="flex flex-row justify-end">
         <button

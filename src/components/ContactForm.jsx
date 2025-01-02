@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { StatesData } from "@/utils/stateData";
 import { useDispatch, useSelector } from "react-redux";
-import { createContact } from "@/features/contacts/thunks";
+import { createContact, updateContact } from "@/features/contacts/thunks";
+import { setIsAddressEdit } from "@/features/contacts/slice";
 
 const ContactForm = ({ data, onClose, reloadData }) => {
   const [selectedState, setSelectedState] = useState("");
@@ -19,15 +20,20 @@ const ContactForm = ({ data, onClose, reloadData }) => {
   const id = selector.contactId;
 
   useEffect(() => {
-    if (id === "updateContactForm" && data) {
-      console.log("called");
-      setAddressType(data.address[0].addressType || "");
-      setAddressLine1(data.address[0].addressLine1 || "");
-      setAddressLine2(data.address[0].addressLine2 || "");
-      setCity(data.address[0].city || "");
-      setSelectedState(data.address[0].state || "");
-      setPostCode(data.address[0].postalCode || "");
+    if (
+      id === "updateContactForm" &&
+      selector.activeTab === "address" &&
+      data
+    ) {
+      console.log(data.address);
+      setAddressType(data.address.addressType || "");
+      setAddressLine1(data.address.addressLine1 || "");
+      setAddressLine2(data.address.addressLine2 || "");
+      setCity(data.address.city || "");
+      setSelectedState(data.address.state || "");
+      setPostCode(data.address.postalCode || "");
       setUser(data._id || "");
+      setCountry(data.address.country || "");
     }
   }, [data, id]);
 
@@ -35,20 +41,18 @@ const ContactForm = ({ data, onClose, reloadData }) => {
 
   const handleSubmitHandler = async (e) => {
     e.preventDefault();
+    dispatch(setIsAddressEdit(false));
     const data = {
       type: "address",
-      address: [
-        {
-          addressType,
-          addressLine1,
-          addressLine2,
-          city,
-          state: selectedState,
-          postalCode: postCode,
-          country,
-        },
-      ],
-      others: [],
+      address: {
+        addressType,
+        addressLine1,
+        addressLine2,
+        city,
+        state: selectedState,
+        postalCode: postCode,
+        country,
+      },
     };
     const res = await dispatch(createContact(data));
 
@@ -63,6 +67,29 @@ const ContactForm = ({ data, onClose, reloadData }) => {
       setPostCode("");
 
       if (reloadData) reloadData();
+    }
+  };
+
+  const handleEditHandler = async (e) => {
+    e.preventDefault();
+    const data = {
+      type: "address",
+      address: {
+        addressLine1,
+        addressLine2,
+        addressType,
+        postalCode: postCode,
+        state: selectedState,
+        country,
+        city,
+      },
+    };
+
+    const res = await dispatch(updateContact({ contactId: user, body: data }));
+
+    if (res.meta.requestStatus === "fulfilled") {
+      onClose(); 
+      if (reloadData) reloadData(); 
     }
   };
 
@@ -195,13 +222,24 @@ const ContactForm = ({ data, onClose, reloadData }) => {
           <option value="India">India</option>
         </select>
       </div>
-      <button
-        type="submit"
-        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        onClick={handleSubmitHandler}
-      >
-        Submit
-      </button>
+
+      {selector.isAddressEdit ? (
+        <button
+          type="submit"
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          onClick={handleEditHandler}
+        >
+          Update
+        </button>
+      ) : (
+        <button
+          type="submit"
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          onClick={handleSubmitHandler}
+        >
+          Submit
+        </button>
+      )}
     </form>
   );
 };

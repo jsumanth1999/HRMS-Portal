@@ -73,7 +73,7 @@ const userSchema = new mongoose.Schema({
         required: false,
     },
     dateOfConfirmation: {
-        type: String,
+        type: Date,
         required: false,
     }
 }, {

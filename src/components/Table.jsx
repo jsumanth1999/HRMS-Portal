@@ -1,17 +1,18 @@
 "use client"
+
 import React from 'react';
 
-const Table = (props) => {
+const Table = (props) => {   
     const details = props?.data;
     console.log(details);
     const lengthValue = details?.rows?.length;
     if (!details) {
         return;
     }
-
+   
     return (
         <div className="m-10 relative overflow-x-auto w-full sm:w-auto shadow-2xl sm:rounded-lg">
-            <button className='bg-blue-500 text-white px-2 flex justify-end text-center'>Edit</button>
+            {/* <button className='bg-blue-500 text-white px-2 flex justify-end text-center'>Edit</button> */}
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead className="text-md font-bold text-white uppercase bg-blue-950 dark:bg-white border dark:text-blue-900">
                     <tr>

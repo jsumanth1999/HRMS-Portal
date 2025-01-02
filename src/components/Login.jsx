@@ -1,15 +1,23 @@
 "use client";
-import { setIsLoggedIn } from "@/features/user/slice";
+import {
+  setIsLoggedIn,
+  setUserData,
+  setUserLoginID,
+  setUserRole,
+} from "@/features/user/slice";
+import { fetchUserById } from "@/features/user/thunks";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
   const dispatch = useDispatch();
+  const selector = useSelector((state) => state.user);
+  console.log(selector.userLoginId);
 
   const handlerData = async (e) => {
     e.preventDefault();
@@ -26,9 +34,14 @@ const Login = () => {
       });
       let responseData = await response.json();
       if (response.ok) {
-        localStorage.setItem("token", responseData.token);
-        dispatch(setIsLoggedIn(true))
-        router.push("/usermanagement");
+        localStorage.setItem("token", responseData?.token);
+        const id = await dispatch(setUserLoginID(responseData?.userID));
+        const user = id.payload;
+        const data = await dispatch(fetchUserById({ userId: user }));
+        await dispatch(setUserRole(responseData?.role));
+        await dispatch(setUserData(data.payload.data));
+        await dispatch(setIsLoggedIn(true));
+        router.push("/profile");
       } else {
         alert(responseData?.message || "An error occurred");
       }
@@ -75,14 +88,6 @@ const Login = () => {
           <div>
             <div className="flex items-center justify-between">
               <label className="block text-sm/6 font-medium">Password</label>
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-semibold text-blue-600 hover:text-blue-500"
-                >
-                  Forgot password?
-                </a>
-              </div>
             </div>
             <div className="mt-2">
               <input
@@ -104,6 +109,14 @@ const Login = () => {
             >
               Sign in
             </button>
+          </div>
+          <div className="text-sm text-end">
+            <a
+              href="#"
+              className="font-semibold text-blue-600 hover:text-blue-500"
+            >
+              Forgot password?
+            </a>
           </div>
         </form>
       </div>

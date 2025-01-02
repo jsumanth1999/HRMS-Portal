@@ -6,6 +6,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+:root {
+  --font-family-bauhaus-std-medium: "Bauhaus Std Medium", sans-serif;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

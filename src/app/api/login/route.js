@@ -27,9 +27,11 @@ export async function POST(NextRequest){
         },{status: 404})
     }
 
-    const token = jwt.sign({_id : user._id, email: user.email},process.env.SECRET_KEY, {expiresIn: '1h'});
+    const token = jwt.sign({_id : user._id, email: user.email,role: user.role},process.env.SECRET_KEY, {expiresIn: '1h'});
 
     return NextResponse.json({
+        userID: user._id,
+        role: user.role,
         message: "Login Successfully...",
         token
     })

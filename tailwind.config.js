@@ -58,6 +58,9 @@ module.exports = {
         'xs': '480px', // Custom screen size for mobile
         'lg': '1200px', // Custom screen size for large devices
       },
+	  fontFamily: {
+        bauhaus: ['var(--font-family-bauhaus-std-medium)', 'sans-serif'],
+      },
   	}
   },
   plugins: [

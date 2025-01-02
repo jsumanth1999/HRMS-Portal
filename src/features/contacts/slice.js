@@ -15,6 +15,8 @@ const initialState = {
   contactSelectedId: null,
   activeTab: "address",
   contactId: null,
+  otherId: null,
+  isAddressEdit:false,
 };
 
 const contactSlice = createSlice({
@@ -26,6 +28,12 @@ const contactSlice = createSlice({
     },
     setContactId : (state, action) => {
       state.contactId = action.payload
+    },
+    setIsAddressEdit : (state, action) => {
+      state.isAddressEdit = action.payload;
+    },
+    setOtherId : (state, action) => {
+      state.otherId = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -90,6 +98,6 @@ const contactSlice = createSlice({
   },
 });
 
-export const { setTab, setContactId } = contactSlice.actions;
+export const { setTab, setContactId , setIsAddressEdit, setOtherId } = contactSlice.actions;
 
 export default contactSlice.reducer;

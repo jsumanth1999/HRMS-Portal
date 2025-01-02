@@ -15,8 +15,11 @@ const OtherTable = (props) => {
     const dispatch = useDispatch();
 
     const selector = useSelector((state) => state.holiday);
-    const fullYear = selector.year;
+    let fullYear = selector.year;
 
+    if(fullYear === "Address"){
+        fullYear = 2023;
+    }
 
     const handleEdit = async(id) => {
         dispatch(setHolidayForm("updateHoliday"))
@@ -29,6 +32,7 @@ const OtherTable = (props) => {
     const handleDelete = async(id) => {
         console.log(id);
         const res = await dispatch(deleteHoliday({holidayId : id}));
+        await dispatch(fetchHolidays(dispatch))
         console.log(res);
         if (res.meta.requestStatus === "fulfilled") {
             fetchHolidays(); // Ensure reloadData is called
@@ -48,7 +52,7 @@ const OtherTable = (props) => {
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr className='w-full bg-blue-950 dark:bg-white dark:text-gray-800 text-white text-md font-bold'>
-                            <th colSpan="8" className="px-6 py-3 justify-center">{holidays?.title}</th>
+                            <th colSpan="8" className="px-6 py-3 justify-center">{holidays.title || "List of Holidays"} </th>
                         </tr>
                         <tr>
                             {columns?.map((item, index) => (

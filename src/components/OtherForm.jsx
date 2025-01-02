@@ -1,38 +1,61 @@
 "use client";
-import { createContact } from "@/features/contacts/thunks";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { setOtherId } from "@/features/contacts/slice";
+import { createContact, updateContact } from "@/features/contacts/thunks";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-const OtherForm = ({ onClose, reloadData }) => {
+const OtherForm = ({ data, onClose, reloadData }) => {
   const [contacttype, setContacttype] = useState("Email");
-  const [data, setData] = useState("");
+  const [data1, setData1] = useState("");
+  const [user, setUser] = useState("");
+  const selector = useSelector((state) => state.contact);
 
   const dispatch = useDispatch();
 
   let defaultValue = contacttype;
 
+  useEffect(() => {
+    if (selector.activeTab === "others") {
+      setContacttype(data?.others?.contactType || "");
+      setData1(data?.others?.value || "");
+      setUser(data?._id || "");
+    }
+  }, []);
+
   const handleSubmitHandler = async (e) => {
     e.preventDefault();
     const details = {
       type: "others",
-      address: [],
-      others: [
-        {
-          channelType: contacttype,
-          contactType: contacttype,
-          primaryChannel: false,
-          value: data,
-        },
-      ],
+      others: {
+        channelType: contacttype,
+        contactType: contacttype,
+        value: data1,
+      },
     };
-    console.log(data);
     const res = await dispatch(createContact(details));
 
     if (res?.meta?.requestStatus === "fulfilled") {
       onClose();
       setContacttype("Email");
-      setData("");
+      setData1("");
       if (reloadData) reloadData();
+    }
+  };
+
+  const handleEditHandler = async (e) => {
+    e.preventDefault();
+    const data = {
+      type: "others",
+      others: {
+        contactType: contacttype,
+        channelType: contacttype,
+        value: data1,
+      },
+    };
+    const res = await dispatch(updateContact({ contactId: user, body: data }));
+    if (res.meta.requestStatus === "fulfilled") {
+      onClose();  // Close the modal after successful update
+      if (reloadData) reloadData();  // Ensure reloadData is called
     }
   };
 
@@ -80,22 +103,32 @@ const OtherForm = ({ onClose, reloadData }) => {
         </label>
         <input
           type="text"
-          value={data}
+          value={data1}
           onChange={(e) => {
-            setData(e.target.value);
+            setData1(e.target.value);
           }}
           className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
           required
         />
       </div>
 
-      <button
-        type="submit"
-        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        onClick={handleSubmitHandler}
-      >
-        Submit
-      </button>
+      {selector.otherId === "updateOthers" ? (
+        <button
+          type="submit"
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          onClick={handleEditHandler}
+        >
+          Update
+        </button>
+      ) : (
+        <button
+          type="submit"
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          onClick={handleSubmitHandler}
+        >
+          Submit
+        </button>
+      )}
     </form>
   );
 };

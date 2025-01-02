@@ -36,7 +36,7 @@ const HolidayForm = ({ data, onClose, reloadData }) => {
 
     const d = new Date(date);
     const year = d.getFullYear();
-    const formattedDate = d.toISOString().split("T")[0]; // Ensure date is in "YYYY-MM-DD" format
+    const formattedDate = d.toISOString().split("T")[0]; 
 
     const formattedAlternateWorkingDate =
       alternateWorkingDate && new Date(alternateWorkingDate).toISOString().split("T")[0];
@@ -49,18 +49,12 @@ const HolidayForm = ({ data, onClose, reloadData }) => {
       alternateWorkingDate: formattedAlternateWorkingDate || "0000-00-00",
     };
 
-    console.log("Data being sent to server:", data);
-
     const response = await dispatch(updateHoliday({ holidayId: holiday, body: data }));
-    console.log(response);
     if (response.meta.requestStatus === "fulfilled") {
-      onClose(); // Close the modal after successful update
-      if (reloadData) reloadData(); // Ensure reloadData is called
-    } else {
-      console.error("Failed to update holiday:", response);
+      onClose(); 
+      if (reloadData) reloadData(); 
     }
 };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();

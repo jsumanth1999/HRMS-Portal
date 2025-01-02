@@ -1,10 +1,10 @@
-"use client";
+
 import React, { useEffect, useState } from "react";
 import ContactTable from "./ContactTable";
 import { formDetails, otherDetails } from "@/utils/personDetails";
 import Modal from "./Modal";
 import { useDispatch, useSelector } from "react-redux";
-import { setTab } from "@/features/contacts/slice";
+import { setOtherId, setTab } from "@/features/contacts/slice";
 import { handleListContacts } from "@/utils/handleListUser";
 
 const Tab = (props) => {
@@ -20,68 +20,49 @@ const Tab = (props) => {
     try {
       setLoading(true);
       const data = await handleListContacts(dispatch);
-      const contacts = data?.response;
-
+      const contacts = data?.response || [];
       const mergeData = [];
-
+      
       contacts.forEach((element) => {
-        const { address, others } = element;
-
-        if (
-          activeTab === "address" &&
-          Array.isArray(address) &&
-          address.length > 0
-        ) {
-          mergeData.push(...address);
-        } else if (
-          activeTab === "others" &&
-          Array.isArray(others) &&
-          others.length > 0
-        ) {
-          mergeData.push(...others);
+        const { _id, address, others } = element;
+        if (activeTab === "address" && address) {
+          dispatch(setOtherId(null));
+          dispatch(setOtherId(null))
+          mergeData.push({...address, _id}); 
+        } else if (activeTab === "others" && others) {
+          dispatch(setOtherId("updateOthers"))
+          mergeData.push({...others, _id}); 
         }
       });
-
-      if (activeTab === "address") {
-        const details =  {
-          title: "Contact Information",
-          columns: ["Address Type", "Address Line1", "Address Line2", "City", "State","Country","Postal Code"],
-          rows: mergeData.map((user) => ({
-            _id: user._id,
-            values: [
-              user.addressType,
-              user.addressLine1,
-              user.addressLine2,
-              user.city,
-              user.state,
-              user.country,
-              user.postalCode
-            ],
-          })),
-        };
-        setUserData(details);
-      }else{
-        const details =  {
-            title: "Others Information",
-            columns: ["Contact Type", "Channel Type", "Value"],
-            rows: mergeData.map((user) => ({
-              _id: user._id,
-              values: [
-                user.contactType,
-                user.channelType,
-                user.value
-              ],
-            })),
-          };
-          setUserData(details);
-        
-      }
+      const details = {
+        title: activeTab === "address" ? "Contact Information" : "Others Information",
+        columns:
+          activeTab === "address"
+            ? ["Address Type", "Address Line1", "Address Line2", "City", "State", "Country", "Postal Code"]
+            : ["Contact Type", "Channel Type", "Value"],
+        rows: mergeData.map((user) => ({
+          _id: user._id,
+          values:
+            activeTab === "address"
+              ? [
+                  user.addressType,
+                  user.addressLine1,
+                  user.addressLine2,
+                  user.city,
+                  user.state,
+                  user.country,
+                  user.postalCode,
+                ]
+              : [user.contactType, user.channelType, user.value ],
+        })),
+      };
+      setUserData(details);
     } catch (error) {
       console.error("Failed to fetch user data:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }; 
 
   useEffect(() => {
     fetchContacts();
@@ -93,7 +74,8 @@ const Tab = (props) => {
   };
 
   const openModal = (formData) => {
-    setModalData(formData);
+    dispatch(setOtherId(null));
+    (activeTab === "address") ? setModalData(formData) : setModalData("")
     setIsModalVisible(true);
   };
 
@@ -162,7 +144,12 @@ const Tab = (props) => {
         </ul>
       </div>
       <div className="mt-5">{getActiveTab(activeTab)}</div>
-      <Modal isVisible={isModalVisible} onClose={closeModal} data={modalData} reloadData={fetchContacts} />
+      <Modal
+        isVisible={isModalVisible}
+        onClose={closeModal}
+        data={modalData}
+        reloadData={fetchContacts}
+      />
     </div>
   );
 };

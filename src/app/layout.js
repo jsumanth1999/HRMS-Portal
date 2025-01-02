@@ -1,10 +1,12 @@
-"use client"; // This ensures this component is a client component
+"use client"; 
 
 import localFont from "next/font/local";
 import "./globals.css";
-import Sidebar from "@/components/Sidebar"; // Ensure this is a client component if using Redux
 import { Provider } from "react-redux";
-import { store } from "@/store"; // Make sure your Redux store is correctly set up
+import { store } from "@/store"; 
+import Sidebar from "@/components/Sidebar";
+import DarkModeToggle from "@/components/DarkmodeToggle";
+import { usePathname } from "next/navigation"; 
 
 // Load custom fonts
 const geistSans = localFont({
@@ -19,13 +21,17 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-
 export default function RootLayout({ children }) {
+  const pathname = usePathname(); 
+
+  const hideSidebarPaths = ["/login"];
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Provider store={store}>
-          <Sidebar /> 
+          <DarkModeToggle />
+          {!hideSidebarPaths.includes(pathname) && <Sidebar />}
           {children}
         </Provider>
       </body>
