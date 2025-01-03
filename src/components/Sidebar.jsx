@@ -1,8 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import DarkModeToggle from "./DarkmodeToggle";
 import { data } from "@/utils/data";
-import { IoIosArrowForward, IoIosArrowDown } from "react-icons/io";
 import { FaUser, FaCalendarAlt, FaHistory, FaLaptop } from "react-icons/fa";
 import { usePathname } from "next/navigation"; // Import usePathname
 import { FaUserGroup } from "react-icons/fa6";

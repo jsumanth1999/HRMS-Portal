@@ -19,6 +19,7 @@ const initialState = {
   isLoggedIn: false,
   userdata:null,
   role:null,
+  passwordId:null,
 };
 
 const userSlice = createSlice({
@@ -40,8 +41,11 @@ const userSlice = createSlice({
     setUserData : (state, action) => {
       state.userdata = action.payload;
     },
-    setUserRole: (state,action) => {
+    setUserRole: (state, action) => {
       state.role = action.payload;
+    },
+    setPasswordId: (state, action) => {
+      state.passwordId = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -116,6 +120,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setFormId, setUserSelectedId, setIsLoggedIn, setUserLoginID, setUserData, setUserRole } = userSlice.actions;
+export const { setFormId, setUserSelectedId, setIsLoggedIn, setUserLoginID, setUserData, setUserRole, setPasswordId } = userSlice.actions;
 
 export default userSlice.reducer;
