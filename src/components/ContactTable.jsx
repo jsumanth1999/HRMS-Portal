@@ -1,25 +1,28 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
 import { useDispatch, useSelector } from "react-redux";
-import { setFormId } from "@/features/user/slice";
+import { setFormId, setPasswordId } from "@/features/user/slice";
 import { deleteUser, fetchUserById } from "@/features/user/thunks";
 import { handleListUser } from "@/utils/handleListUser";
-import { deleteContact, fetchContactById } from "@/features/contacts/thunks";
+import { deleteContact, fetchContactById, fetchContacts } from "@/features/contacts/thunks";
 import { setIsAddressEdit, setOtherId } from "@/features/contacts/slice";
+import { usePathname } from "next/navigation";
 
 const ContactTable = ({ data, reloadData }) => {
   const details = data;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalData, setModalData] = useState(null);
   const [userDetail, setUserDetail] = useState(null);
+  const pathname = usePathname();
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.contact);
+
+  
 
   // Edit handler
   const handleEdit = async (id) => {
     dispatch(setFormId("updateInviteForm"));
-    console.log(id);
     const res = await dispatch(fetchUserById({ userId: id }));
     const user = res?.payload?.data;
     setUserDetail(user);
@@ -30,7 +33,6 @@ const ContactTable = ({ data, reloadData }) => {
   const handleContactEdit = async (id) => {
     dispatch(setOtherId("updateOthers"));
     dispatch(setIsAddressEdit(true));
-    console.log("update code called", id);
     const res = await dispatch(fetchContactById({ contactId: id }));
     const address = res?.payload?.data;
     setUserDetail(address);
@@ -44,21 +46,29 @@ const ContactTable = ({ data, reloadData }) => {
   const handleDelete = async (id) => {
     try {
       await dispatch(deleteUser({ userId: id }));
-      await handleListUser(dispatch); // Fetch the latest list of users
-      if (reloadData) reloadData(); // Reload data if the function is passed
+      await handleListUser(dispatch); 
+      if (reloadData) {
+        fetchContacts()
+        reloadData(); 
+      }
     } catch (error) {
       console.error("Error deleting user:", error);
     }
   };
 
   const handleContactDelete = async (id) => {
-    console.log("Contact Delete", id);
     try {
       await dispatch(deleteContact({ contactId: id }));
       if (reloadData) reloadData();
     } catch (error) {
       console.error("Error while deleting contact", error);
     }
+  };
+
+  const handleUpdatePassword = (id) => {
+    dispatch(setPasswordId(id));
+    setIsModalVisible(true);
+    setModalData("updatePassword");
   };
 
   // Close modal handler
@@ -84,7 +94,6 @@ const ContactTable = ({ data, reloadData }) => {
                 {column}
               </th>
             ))}
-            <th className="text-center px-6 py-3">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -111,28 +120,40 @@ const ContactTable = ({ data, reloadData }) => {
                   </td>
                 ))}
 
-                <td className="px-2 py-4">
-                  <button
-                    className="px-2 m-2 py-2 bg-blue-500 text-white font-bold"
-                    onClick={() =>
-                      selector.contactId === "updateContactForm"
-                        ? handleContactEdit(row._id || rowIndex)
-                        : handleEdit(row._id || rowIndex)
-                    }
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="px-2 m-2 py-2 bg-red-500 text-white font-bold"
-                    onClick={() =>
-                      selector.contactId === "updateContactForm"
-                        ? handleContactDelete(row._id || rowIndex)
-                        : handleDelete(row._id || rowIndex)
-                    }
-                  >
-                    Delete
-                  </button>
-                </td>
+                {pathname != "/dashboard" && (
+                  <td className="px-2 py-4">
+                    <button
+                      className="px-2 m-2 py-2 bg-blue-500 text-white font-bold"
+                      onClick={() =>
+                        selector.contactId === "updateContactForm"
+                          ? handleContactEdit(row._id || rowIndex)
+                          : handleEdit(row._id || rowIndex)
+                      }
+                    >
+                      Edit
+                    </button>
+                    {pathname === "/usermanagement" && (
+                      <button
+                        className="px-2 m-2 py-2 bg-green-500 text-white font-bold"
+                        onClick={() =>
+                          handleUpdatePassword(row._id || rowIndex)
+                        }
+                      >
+                        Reset Password
+                      </button>
+                    )}
+                    <button
+                      className="px-2 m-2 py-2 bg-red-500 text-white font-bold"
+                      onClick={() =>
+                        selector.contactId === "updateContactForm"
+                          ? handleContactDelete(row._id || rowIndex)
+                          : handleDelete(row._id || rowIndex)
+                      }
+                    >
+                      Delete
+                    </button>
+                  </td>
+                )}
               </tr>
             );
           })}

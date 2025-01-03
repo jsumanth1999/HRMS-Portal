@@ -38,8 +38,8 @@ const Tab = (props) => {
         title: activeTab === "address" ? "Contact Information" : "Others Information",
         columns:
           activeTab === "address"
-            ? ["Address Type", "Address Line1", "Address Line2", "City", "State", "Country", "Postal Code"]
-            : ["Contact Type", "Channel Type", "Value"],
+            ? ["Address Type", "Address Line1", "Address Line2", "City", "State", "Country", "Postal Code", "Actions"]
+            : ["Contact Type", "Channel Type", "Value", "Actions"],
         rows: mergeData.map((user) => ({
           _id: user._id,
           values:

@@ -6,19 +6,11 @@ import ContactForm from "./ContactForm";
 import LeaveForm from "./LeaveForm";
 import InviteUserForm from "./InviteUserForm";
 import HolidayForm from "./HolidayForm";
-import { useDispatch } from "react-redux";
-import { setContactId } from "@/features/contacts/slice";
+import password from "./password";
 
 const Modal = ({ isVisible, onClose, data, userData, reloadData }) => {
-  console.log(data);
-  const dispatch = useDispatch();
+  console.log(userData);
   const id = data?.id || data;
-
-  // if(id === "updateInviteForm"){
-  //   dispatch(setContactId("updateForm"));
-  // }else{
-  //   dispatch(setContactId(null))
-  // }
     console.log(id)
   let title;
   let FormComponent;
@@ -55,6 +47,10 @@ const Modal = ({ isVisible, onClose, data, userData, reloadData }) => {
     case "updateOthers":
       title = "Update"
       FormComponent = OtherForm;
+      break;
+    case "updatePassword":
+      title = "Update Password";
+      FormComponent = password;
       break;
     default:
       title = "Create Other Info";

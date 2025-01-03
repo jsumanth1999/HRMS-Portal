@@ -5,8 +5,8 @@ const LeaveSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required : true
     },
-    leaveDescription: {
-        type: String,
+    typeId: {
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
     fromDate: {
@@ -20,6 +20,35 @@ const LeaveSchema = new mongoose.Schema({
     reasonsForApplying: {
         type: String,
         required: true,
+    },
+    status: {
+        type: String,
+        required: true,
+        default: "pending",
+    },
+    approveReason: {
+        type: String,
+        required: false,
+    },
+    approvedBy: {
+        type: String,
+        required: false,
+    },
+    approvedAt: {
+        type: Date,
+        required: false,
+    },
+    rejectReason: {
+        type: String,
+        required: false,
+    },
+    rejectedBy: {
+        type: String,
+        required: false,
+    },
+    rejectedAt: {
+        type: Date,
+        required: false,
     }
 }, { timestamps: true });
 
